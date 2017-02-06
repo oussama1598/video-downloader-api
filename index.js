@@ -37,6 +37,10 @@ function fetch(URL, serverRes) {
                 res.destroy();
             }
         });
+        res.on("error", function (){
+        	res.writeHead(404);
+        	res.send("Error");
+        })
     });
 }
 
