@@ -7,6 +7,8 @@ const express = require('express');
 const cors = require('cors');
 const rangeParser = require("range-parser");
 const app = express();
+const apicache = require('apicache');
+const cache = apicache.middleware;
 
 // express options
 app.use(cors());
@@ -55,7 +57,7 @@ app.get("/", (req, res) => {
     })
 })
 
-app.get("/download", (req, res) => {
+app.get("/download", cache("1 day"), (req, res) => {
     if (!req.query.url) return res.sendStatus(404);
 
     getUrl(req.query.url).then(URL => {
