@@ -1,43 +1,15 @@
 'use strict';
 
-const phantom = require("phantom");
-const url = require('url');
 const request = require('request');
 const express = require('express');
 const cors = require('cors');
-const rangeParser = require("range-parser");
 const app = express();
 const apicache = require('apicache');
 const cache = apicache.middleware;
+const providers = require("./providers/providers");
 
 // express options
 app.use(cors());
-
-
-// to be removed from here
-let _ph, _page, _outObj;
-
-function getUrl(provUrl) {
-    return phantom.create().then(ph => {
-        _ph = ph;
-        return _ph.createPage();
-    }).then(page => {
-        _page = page;
-        return _page.open(provUrl);
-    }).then(status => {
-        return _page.property('content')
-    }).then(content => {
-        return _page.evaluate(function() {
-            return document.getElementById('streamurl').innerHTML;
-        }).then(function(URL) {
-            _page.close();
-            _ph.exit();
-
-            if (!URL) return null;
-            return `https://openload.co/stream/${URL}?mime=true`;
-        });
-    });
-}
 
 function stream(URL, req, res) {
     const range = req.headers.range,
@@ -47,20 +19,20 @@ function stream(URL, req, res) {
     res.setHeader('Accept-Ranges', 'bytes');
     request.get(URL, { headers }).pipe(res);
 }
-//
 
 app.get("/", (req, res) => {
     res.json({
         AUTHOR: "oussama1598",
         API_NAME: "video-downloader-parser",
-        URL: "/download?url=(:video-url)"
+        URL: "/download?url=(:video-url)",
+        SUPPORTED_SITES: providers.list()
     })
 })
 
 app.get("/download", cache("1 day"), (req, res) => {
     if (!req.query.url) return res.sendStatus(404);
 
-    getUrl(req.query.url).then(URL => {
+    providers.parse(req.query.url).then(URL => {
         res.json({
             success: true,
             streamUrl: URL ? `http://video-downloader.herokuapp.com/stream?url=${URL}` : null
