@@ -13,7 +13,11 @@ function download(id, res) {
         form: { id }
     }).on('response', function(response) {
         console.log(response.statusCode) // 200
-        res.writeHead(200, { 'Content-Type': 'video/mp4' });
+        res.writeHead(200, {
+            'Content-Type': 'video/mp4',
+            'Content-length': response.headers['content-length'],
+            'Accept-Ranges': 'bytes'
+        });
     }).pipe(res);
 }
 
@@ -25,9 +29,11 @@ function fetch(URL, serverRes) {
             if (chunk.indexOf("data:") > -1) {
                 const data = chunk.trim().replace("data: ", ""),
                     id = url.parse(data, true).query.id;
-                if (!id) { serverRes.writeHead(404);
-                    serverRes.end("Can't find any stream url"); }
-                //download(id, serverRes);
+                if (!id) {
+                    serverRes.writeHead(404);
+                    serverRes.end("Can't find any stream url");
+                }
+                download(id, serverRes);
                 res.destroy();
             }
         });
