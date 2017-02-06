@@ -59,11 +59,15 @@ app.get("/download", (req, res) => {
     if (!req.query.url) return res.sendStatus(404);
 
     getUrl(req.query.url).then(URL => {
-        if (!URL) return res.sendStatus(404);
-
-        res.redirect(`/stream?url=${URL}`);
+        res.json({
+            success: true,
+            streamUrl: URL ? `http://video-downloader.herokuapp.com/stream?url=${URL}` : null
+        })
     }).catch(err => {
-        res.sendStatus(404);
+        res.json({
+            success: false,
+            streamUrl: null
+        });
     })
 })
 
