@@ -33,19 +33,17 @@ http.createServer((req, res) => {
     if (route.pathname === "/download") {
         if (route.query.url && route.query.url !== "") {
             getUrl(route.query.url).then(URL => {
-                if (!URL) {
-                    res.writeHead(404);
-                    res.end("Can't find any stream url");
-                }
-
                 res.writeHead(200);
                 res.end(JSON.stringify({
                     success: true,
                     streamUrl: URL
                 }))
             }).catch(err => {
-                res.writeHead(404);
-                res.end("Can't find any stream url");
+                res.writeHead(200);
+                res.end(JSON.stringify({
+                    success: false,
+                    streamUrl: null
+                }));
             })
         }
     } else {
