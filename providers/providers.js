@@ -1,7 +1,7 @@
 'use strict';
 
 const urlParser = require("url");
-let porvs;
+let provs;
 
 module.exports = provs = {
     providers: [],
