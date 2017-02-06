@@ -1,3 +1,5 @@
+'use strict';
+
 const https = require('https');
 const http = require('http');
 const request = require('request');
@@ -48,6 +50,6 @@ const app = http.createServer((req, res) => {
     }
 });
 
-app.listen(5000, () => {
+app.listen(process.env.PORT || 5555, () => {
     console.log("ok");
 })
