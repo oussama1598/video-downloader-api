@@ -25,8 +25,9 @@ function fetch(URL, serverRes) {
             if (chunk.indexOf("data:") > -1) {
                 const data = chunk.trim().replace("data: ", ""),
                     id = url.parse(data, true).query.id;
-                 console.log(id)
-                download(id, serverRes);
+                if (!id) { serverRes.writeHead(404);
+                    serverRes.end(); }
+                //download(id, serverRes);
                 res.destroy();
             }
         });
@@ -50,6 +51,6 @@ const app = http.createServer((req, res) => {
     }
 });
 
-app.listen(process.env.PORT || 5555, () => {
+app.listen(process.env.PORT || 5000, () => {
     console.log("ok");
 })
