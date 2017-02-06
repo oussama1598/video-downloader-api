@@ -26,7 +26,7 @@ function fetch(URL, serverRes) {
                 const data = chunk.trim().replace("data: ", ""),
                     id = url.parse(data, true).query.id;
                 if (!id) { serverRes.writeHead(404);
-                    serverRes.end(); }
+                    serverRes.end("Can't find any stream url"); }
                 //download(id, serverRes);
                 res.destroy();
             }
