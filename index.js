@@ -13,8 +13,10 @@ const providers = require("./providers/providers");
 app.use(cors());
 
 function stream(URL, req, res) {
-    const range = req.headers.range,
-        headers = range ? { range } : {};
+    const range = req.headers.range;
+    let headers = {};
+
+    if (range) headers['range'] = range;
 
     req.connection.setTimeout(3600000);
     res.setHeader('Accept-Ranges', 'bytes');
@@ -33,10 +35,11 @@ app.get("/", (req, res) => {
 app.get("/download", cache("1 day"), (req, res) => {
     if (!req.query.url) return res.sendStatus(404);
 
-    providers.parse(req.query.url).then(URL => {
+    providers.parse(req.query.url).then(({ URL, stream }) => {
+        const streamUrl = stream ? "http://video-downloader.herokuapp.com/stream?url=" : "";
         res.json({
             success: true,
-            streamUrl: URL ? `http://video-downloader.herokuapp.com/stream?url=${URL}` : null
+            streamUrl: URL ? streamUrl + URL : null
         })
     }).catch(err => {
         res.json({

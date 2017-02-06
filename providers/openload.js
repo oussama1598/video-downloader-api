@@ -9,13 +9,14 @@ function getUrls(url) {
         }).then(function(URL) {
             page.close();
             ph.exit();
-            if (!URL) return null;
-            return `https://openload.co/stream/${URL}?mime=true`;
+            if (!URL) return {URL: null, stream: null};
+            return {URL: `https://openload.co/stream/${URL}?mime=true`, stream: true};
         });
     })
 }
 
 module.exports = {
     getUrls,
-    url: "openload.co"
+    url: "openload.co",
+    stream: true
 }

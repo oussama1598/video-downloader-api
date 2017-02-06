@@ -9,12 +9,13 @@ function getUrls(url) {
         }).then(function(sources) {
             page.close();
             ph.exit();
-            return sources.filter(item => item.label == "480p")[0].file;
+            return { URL: sources.filter(item => item.label == "480p")[0].file, stream: false };
         });
     })
 }
 
 module.exports = {
     getUrls,
-    url: "thevideo.me"
+    url: "thevideo.me",
+    stream: false
 }
