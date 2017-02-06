@@ -21,6 +21,14 @@ function download(id, res) {
     }).pipe(res);
 }
 
+function waitForRes(id, res){
+    request.get({url: `https://dl4.video-download.online/vdo/convert?id=${id}`}, function (err, response, body){
+        if(body.trim().indexOf("event: finish") > -1){
+            download(id, res);
+        }
+    })
+}
+
 function fetch(URL, serverRes) {
     URL = encodeURI(URL);
     https.get(`https://video-download.online/stream/go?link=${URL}&type=video&key=go712957`, function(res) {
@@ -33,7 +41,7 @@ function fetch(URL, serverRes) {
                     serverRes.writeHead(404);
                     serverRes.end("Can't find any stream url");
                 }
-                download(id, serverRes);
+                waitForRes(id, serverRes);
                 res.destroy();
             }
         });
