@@ -1,6 +1,7 @@
 'use strict';
 
 const urlParser = require("url");
+const validUrl = require('valid-url');
 let provs;
 
 module.exports = provs = {
@@ -18,7 +19,7 @@ module.exports = provs = {
         return prov[0].require || null;
     },
     parse: function(url) {
-        if(!url) return Promise.reject();
+        if(!validUrl.isUri(url)) return Promise.reject();
         const parsedUrl = urlParser.parse(url),
             prov = this.providers.filter(prov => prov.require.url === parsedUrl.host.replace("www.", ""));
 
