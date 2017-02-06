@@ -1,27 +1,15 @@
 {
-<<<<<<< HEAD
   "name": "openload-ph",
-=======
-  "name": "tests",
->>>>>>> 4d0031ac2e8c56e91878031f71cf693d6cd3a84a
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
   "scripts": {
-<<<<<<< HEAD
-=======
     "start": "node index",
->>>>>>> 4d0031ac2e8c56e91878031f71cf693d6cd3a84a
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "",
   "license": "ISC",
   "dependencies": {
-<<<<<<< HEAD
     "phantom": "^4.0.0"
-=======
-    "querystring": "^0.2.0",
-    "request": "^2.79.0"
->>>>>>> 4d0031ac2e8c56e91878031f71cf693d6cd3a84a
   }
 }
