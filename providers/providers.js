@@ -18,12 +18,22 @@ module.exports = provs = {
         const prov = this.providers.filter(item => item.name === name);
         return prov[0].require || null;
     },
-    parse: function(url) {
-        if(!validUrl.isUri(url)) return Promise.reject();
+    find: function(url) {
         const parsedUrl = urlParser.parse(url),
-            prov = this.providers.filter(prov => prov.require.url === parsedUrl.host.replace("www.", ""));
+            dots = parsedUrl.host.split(".");
+        if (dots.length > 2) {
+            parsedUrl.host = parsedUrl.host.substr(parsedUrl.host.indexOf(".") + 1);
+        }
 
-        if (prov[0]) return prov[0].require.getUrls(url);
+        const prov = this.providers.filter(prov => prov.require.url === parsedUrl.host);
+
+        if (prov[0]) return prov[0].require;
+        return null;
+    },
+    parse: function(url) {
+        if (!validUrl.isUri(url)) return Promise.reject();
+        const prov = this.find(url);
+        if (prov) return prov.getUrls(url);
 
         return Promise.reject();
     },
@@ -32,4 +42,4 @@ module.exports = provs = {
     }
 }
 
-provs.add(["thevideo", "openload"]);
+provs.add(["uptostream", "openload"]);

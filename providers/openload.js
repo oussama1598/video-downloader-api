@@ -9,8 +9,8 @@ function getUrls(url) {
         }).then(function(URL) {
             page.close();
             ph.exit();
-            if (!URL) return {URL: null, stream: null};
-            return {URL: `https://openload.co/stream/${URL}?mime=true`, stream: true};
+            if (!URL) return null;
+            return URL;
         });
     })
 }
@@ -18,5 +18,5 @@ function getUrls(url) {
 module.exports = {
     getUrls,
     url: "openload.co",
-    stream: true
+    headers: {}
 }

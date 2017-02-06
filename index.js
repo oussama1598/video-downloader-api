@@ -12,10 +12,8 @@ const providers = require("./providers/providers");
 
 app.use(cors());
 
-function stream(URL, req, res) {
+function stream(URL, headers, req, res) {
     const range = req.headers.range;
-    let headers = {};
-
     if (range) headers['range'] = range;
 
     req.connection.setTimeout(3600000);
@@ -24,6 +22,7 @@ function stream(URL, req, res) {
 }
 
 app.get("/", (req, res) => {
+    console.log(req.headers)
     res.json({
         AUTHOR: "oussama1598",
         API_NAME: "video-downloader-parser",
@@ -35,11 +34,10 @@ app.get("/", (req, res) => {
 app.get("/download", cache("1 day"), (req, res) => {
     if (!req.query.url) return res.sendStatus(404);
 
-    providers.parse(req.query.url).then(({ URL, stream }) => {
-        const streamUrl = stream ? "http://video-downloader.herokuapp.com/stream?url=" : "";
+    providers.parse(req.query.url).then(URL => {
         res.json({
             success: true,
-            streamUrl: URL ? streamUrl + URL : null
+            streamUrl: URL ? `http://video-downloader.herokuapp.com/stream?url=${URL}` : null
         })
     }).catch(err => {
         res.json({
@@ -51,8 +49,8 @@ app.get("/download", cache("1 day"), (req, res) => {
 
 app.get("/stream", (req, res) => {
     if (!req.query.url) return res.sendStatus(404);
-
-    stream(req.query.url, req, res);
+    const prov = providers.find(req.query.url);
+    stream(req.query.url, prov.headers, req, res);
 })
 
 app.listen(process.env.PORT || 5000, () => {
