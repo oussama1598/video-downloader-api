@@ -1,8 +1,18 @@
 'use strict';
 
 const phantom = require("phantom");
-const http = require('http');
 const url = require('url');
+const request = require('request');
+const express = require('express');
+const cors = require('cors');
+const rangeParser = require("range-parser");
+const app = express();
+
+// express options
+app.use(cors());
+
+
+// to be removed from here
 let _ph, _page, _outObj;
 
 function getUrl(provUrl) {
@@ -27,33 +37,42 @@ function getUrl(provUrl) {
     });
 }
 
-http.createServer((req, res) => {
-    const route = url.parse(req.url, true);
+function stream(URL, req, res) {
+    const range = req.headers.range,
+        headers = range ? { range } : {};
 
-    if (route.pathname === "/download") {
-        if (route.query.url && route.query.url !== "") {
-            getUrl(route.query.url).then(URL => {
-                res.writeHead(200);
-                res.end(JSON.stringify({
-                    success: true,
-                    streamUrl: URL
-                }))
-            }).catch(err => {
-                res.writeHead(200);
-                res.end(JSON.stringify({
-                    success: false,
-                    streamUrl: null
-                }));
-            })
-        }
-    } else {
-        res.end(JSON.stringify({
-            AUTHOR: "OussameBar",
-            API_NAME: "video-downloader-parser",
-            URL: "/download?url=(:video-url)",
-            COMMENT: "Sorry but i had to"
-        }));
-    }
-}).listen(process.env.PORT || 5000, () => {
+    req.connection.setTimeout(3600000);
+    res.setHeader('Accept-Ranges', 'bytes');
+    request.get(URL, { headers }).pipe(res);
+}
+//
+
+app.get("/", (req, res) => {
+    res.json({
+        AUTHOR: "oussama1598",
+        API_NAME: "video-downloader-parser",
+        URL: "/download?url=(:video-url)"
+    })
+})
+
+app.get("/download", (req, res) => {
+    if (!req.query.url) return res.sendStatus(404);
+
+    getUrl(req.query.url).then(URL => {
+        if (!URL) return res.sendStatus(404);
+
+        res.redirect(`/stream?url=${URL}`);
+    }).catch(err => {
+        res.sendStatus(404);
+    })
+})
+
+app.get("/stream", (req, res) => {
+    if (!req.query.url) return res.sendStatus(404);
+
+    stream(req.query.url, req, res);
+})
+
+app.listen(process.env.PORT || 5000, () => {
     console.log("Server is up");
 })
