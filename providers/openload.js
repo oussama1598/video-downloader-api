@@ -10,7 +10,7 @@ function getUrls(url) {
             page.close();
             ph.exit();
             if (!URL) return null;
-            return URL;
+            return `https://openload.co/stream/${URL}?mime=true`;
         });
     })
 }
