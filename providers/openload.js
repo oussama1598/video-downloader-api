@@ -16,7 +16,7 @@ function buildIp(ip) {
     return str;
 }
 
-function replaceIp(ip, url){
+function replaceIp(ip, url) {
     var str2 = urlParser.parse(url).pathname.split("~")[2];
     return url.replace(str2, ip);
 }
@@ -30,7 +30,7 @@ function getUrls(url, ip) {
             page.close();
             ph.exit();
             if (!URL) return null;
-            return replaceIp(buildIp(ip), URL);
+            return { url: `https://openload.co/stream/${replaceIp(buildIp(ip), URL)}?mime=true` };
         });
     })
 }
