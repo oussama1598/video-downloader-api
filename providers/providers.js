@@ -30,10 +30,10 @@ module.exports = provs = {
         if (prov[0]) return prov[0].require;
         return null;
     },
-    parse: function(url) {
+    parse: function(url, ip) {
         if (!validUrl.isUri(url)) return Promise.reject();
         const prov = this.find(url);
-        if (prov) return prov.getUrls(url);
+        if (prov) return prov.getUrls(url, ip);
 
         return Promise.reject();
     },

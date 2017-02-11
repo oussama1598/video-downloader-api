@@ -3,6 +3,7 @@
 const request = require('request');
 const express = require('express');
 const cors = require('cors');
+const urlParser = require('url');
 const app = express();
 const apicache = require('apicache');
 const cache = apicache.middleware;
@@ -11,6 +12,7 @@ const providers = require("./providers/providers");
 // express options 
 
 app.use(cors());
+app.enable('trust proxy');
 
 function stream(URL, headers, req, res) {
     const range = req.headers.range;
@@ -31,13 +33,12 @@ app.get("/", (req, res) => {
     })
 })
 
-app.get("/download", cache("1 day"), (req, res) => {
+app.get("/download", (req, res) => {
     if (!req.query.url) return res.sendStatus(404);
-
-    providers.parse(req.query.url).then(URL => {
+    providers.parse(req.query.url, req.ip.split(':')[0]).then(URL => {
         res.json({
             success: true,
-            streamUrl: URL ? `http://video-downloader.herokuapp.com/stream?url=${URL}` : null
+            streamUrl: URL ? typeof URL === "object" ? URL.url : `http://video-downloader.herokuapp.com/stream?url=${URL}` : null
         })
     }).catch(err => {
         res.json({
