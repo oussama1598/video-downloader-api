@@ -15,8 +15,8 @@ app.use(cors());
 function stream(URL, headers, req, res) {
     const range = req.headers.range;
     if (range) headers['range'] = range;
-
     req.connection.setTimeout(3600000);
+    res.status(200);
     res.setHeader('Accept-Ranges', 'bytes');
     request.get(URL, { headers }).pipe(res);
 }
