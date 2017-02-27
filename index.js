@@ -28,7 +28,8 @@ app.get("/download", (req, res) => {
     }).catch(err => {
         res.json({
             success: false,
-            streamUrl: err
+            error: err,
+            streamUrl: null
         });
     })
 })
