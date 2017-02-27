@@ -1,30 +1,15 @@
 'use strict';
 
 const request = require('request');
-const express = require('express');
 const cors = require('cors');
-const urlParser = require('url');
+const express = require('express');
 const app = express();
-const apicache = require('apicache');
-const cache = apicache.middleware;
-const providers = require("./providers/providers");
+const providers = require('./providers/providers');
 
-// express options 
-
+// enable the api to be used for evryone (enabling cors)
 app.use(cors());
-app.enable('trust proxy');
-
-function stream(URL, headers, req, res) {
-    const range = req.headers.range;
-    if (range) headers['range'] = range;
-    req.connection.setTimeout(3600000);
-    res.status(200);
-    res.setHeader('Accept-Ranges', 'bytes');
-    request.get(URL, { headers }).pipe(res);
-}
 
 app.get("/", (req, res) => {
-    console.log(req.headers)
     res.json({
         AUTHOR: "oussama1598",
         API_NAME: "video-downloader-parser",
@@ -35,23 +20,17 @@ app.get("/", (req, res) => {
 
 app.get("/download", (req, res) => {
     if (!req.query.url) return res.sendStatus(404);
-    providers.parse(req.query.url, req.ip.split(':')[0]).then(URL => {
+    providers.parse(req.query.url).then(URL => {
         res.json({
             success: true,
-            streamUrl: URL ? typeof URL === "object" ? URL.url : `http://video-downloader.herokuapp.com/stream?url=${URL}` : null
+            streamUrl: URL
         })
     }).catch(err => {
         res.json({
             success: false,
-            streamUrl: null
+            streamUrl: err
         });
     })
-})
-
-app.get("/stream", (req, res) => {
-    if (!req.query.url) return res.sendStatus(404);
-    const prov = providers.find(req.query.url);
-    stream(req.query.url, prov.headers, req, res);
 })
 
 app.listen(process.env.PORT || 5000, () => {

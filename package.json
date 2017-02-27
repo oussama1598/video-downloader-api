@@ -11,11 +11,9 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "apicache": "^0.8.3",
     "cors": "^2.8.1",
     "express": "^4.14.1",
-    "phantom": "^4.0.0",
-    "request": "^2.79.0",
-    "valid-url": "^1.0.9"
+    "valid-url": "^1.0.9",
+    "youtube-dl": "^1.11.1"
   }
 }
